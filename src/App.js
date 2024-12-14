@@ -23,7 +23,11 @@ function TipCalculator() {
         setTipFriend={setTipFriend}
       />
       <Output bill={bill} tipPercentage={tipPercentage} tipFriend={tipFriend} />
-      <Reset />
+      <Reset
+        setBill={setBill}
+        setTipPercentage={setTipPercentage}
+        setTipFriend={setTipFriend}
+      />
     </div>
   );
 }
@@ -78,24 +82,30 @@ function SelectPercentage({
 }
 
 function Output({ bill, tipPercentage, tipFriend }) {
-  const tipAmount = +bill * (+tipPercentage + +tipFriend);
-  console.log(tipAmount + +bill);
-  console.log("tip percentage:", tipPercentage, "tipFriend:", tipFriend);
-  console.log(+tipPercentage + +tipFriend);
+  const validBill = parseFloat(bill) || 0;
+  const validTipPercentage = parseFloat(tipPercentage) || 0;
+  const validTipFriend = parseFloat(tipFriend) || 0;
+  const totalTip = validBill * (validTipPercentage + validTipFriend);
 
   return (
     <div className="outputReset">
-      <p>{`You pay ${Math.round(+bill + tipAmount)} (${+bill} + ${Math.round(
-        tipAmount
+      {validBill === 0 ? null : (
+        <p>{`You pay ${validBill + totalTip} (${validBill} + ${totalTip}
       )} tip)`}</p>
+      )}
     </div>
   );
 }
 
-function Reset() {
+function Reset({ setBill, setTipPercentage, setTipFriend }) {
+  function handleReset() {
+    setBill(0);
+    setTipPercentage(0);
+    setTipFriend(0);
+  }
   return (
     <div className="outputReset">
-      <button>Reset</button>
+      <button onClick={handleReset}>Reset</button>
     </div>
   );
 }
