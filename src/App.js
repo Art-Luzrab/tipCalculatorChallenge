@@ -78,9 +78,16 @@ function SelectPercentage({
 }
 
 function Output({ bill, tipPercentage, tipFriend }) {
+  const tipAmount = +bill * (+tipPercentage + +tipFriend);
+  console.log(tipAmount + +bill);
+  console.log("tip percentage:", tipPercentage, "tipFriend:", tipFriend);
+  console.log(+tipPercentage + +tipFriend);
+
   return (
     <div className="outputReset">
-      <p>{`You pay ${bill + 10} (${bill} + $00 tip)`}</p>
+      <p>{`You pay ${Math.round(+bill + tipAmount)} (${+bill} + ${Math.round(
+        tipAmount
+      )} tip)`}</p>
     </div>
   );
 }
