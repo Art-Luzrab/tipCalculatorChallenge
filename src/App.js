@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./index.css";
 
 function App() {
   return (
@@ -8,106 +9,79 @@ function App() {
   );
 }
 
+export default App;
+
 function TipCalculator() {
-  const [bill, setBill] = useState(0);
-  const [tipPercentage, setTipPercentage] = useState();
-  const [tipFriend, setTipFriend] = useState();
+  const [bill, setBill] = useState("");
+  const [percentage1, setPercentage1] = useState(0);
+  const [percentage2, setPercentage2] = useState(0);
+
+  const tip = bill * (percentage1 + percentage2);
+
+  function handleReset() {
+    setBill("");
+    setPercentage1(0);
+    setPercentage2(0);
+  }
   return (
     <div>
-      <BillInput bill={bill} setBill={setBill} />
+      <BillInput bill={bill} onSetBill={setBill} />
+      <SelectPercentage percentage={percentage1} onSelect={setPercentage1}>
+        How did you like the service?
+      </SelectPercentage>
+      <SelectPercentage percentage={percentage2} onSelect={setPercentage2}>
+        How did your friend like the service?
+      </SelectPercentage>
 
-      <SelectPercentage
-        tipPercentage={tipPercentage}
-        setTipPercentage={setTipPercentage}
-        tipFriend={tipFriend}
-        setTipFriend={setTipFriend}
-      />
-      <Output bill={bill} tipPercentage={tipPercentage} tipFriend={tipFriend} />
-      <Reset
-        setBill={setBill}
-        setTipPercentage={setTipPercentage}
-        setTipFriend={setTipFriend}
-      />
-    </div>
-  );
-}
-function BillInput({ bill, setBill }) {
-  function handleBillChange(e) {
-    setBill(e.target.value);
-  }
-
-  return (
-    <div className="sideBySide">
-      <p>How much was the bill?</p>
-      <input type="number" value={bill} onChange={handleBillChange} />
-    </div>
-  );
-}
-
-function SelectPercentage({
-  tipPercentage,
-  tipFriend,
-  setTipPercentage,
-  setTipFriend,
-}) {
-  function handleSelectChange(e) {
-    setTipPercentage(e.target.value);
-  }
-  function handleSelectFriend(e) {
-    setTipFriend(e.target.value);
-  }
-  return (
-    <>
-      <div className="sideBySide">
-        <p>How did you like the service?</p>
-        <select value={tipPercentage} onChange={handleSelectChange}>
-          <option value="0"> Dissatisfied (0%)</option>
-          <option value="0.05"> It was okay (5%)</option>
-          <option value="0.1">It was good (10%)</option>
-          <option value="0.2"> Absolutely amazing! (20%)</option>
-        </select>
-      </div>
-
-      <div className="sideBySide">
-        <p>How did your friend like the service?</p>
-        <select value={tipFriend} onChange={handleSelectFriend}>
-          <option value="0"> Dissatisfied (0%)</option>
-          <option value="0.05"> It was okay (5%)</option>
-          <option value="0.1">It was good (10%)</option>
-          <option value="0.2"> Absolutely amazing! (20%)</option>
-        </select>
-      </div>
-    </>
-  );
-}
-
-function Output({ bill, tipPercentage, tipFriend }) {
-  const validBill = parseFloat(bill) || 0;
-  const validTipPercentage = parseFloat(tipPercentage) || 0;
-  const validTipFriend = parseFloat(tipFriend) || 0;
-  const totalTip = validBill * (validTipPercentage + validTipFriend);
-
-  return (
-    <div className="outputReset">
-      {validBill === 0 ? null : (
-        <p>{`You pay ${validBill + totalTip} (${validBill} + ${totalTip}
-      )} tip)`}</p>
+      {bill > 0 && (
+        <>
+          <Output bill={bill} tip={tip} />
+          <Reset onReset={handleReset} />
+        </>
       )}
     </div>
   );
 }
 
-function Reset({ setBill, setTipPercentage, setTipFriend }) {
-  function handleReset() {
-    setBill(0);
-    setTipPercentage(0);
-    setTipFriend(0);
-  }
+function BillInput({ bill, onSetBill }) {
   return (
-    <div className="outputReset">
-      <button onClick={handleReset}>Reset</button>
+    <div>
+      <label> How much was the bill?</label>
+      <input
+        type="number"
+        placeholder="Bill value"
+        value={bill}
+        onChange={(e) => onSetBill(Number(e.target.value))}
+      />
     </div>
   );
 }
 
-export default App;
+function SelectPercentage({ children, percentage, onSelect }) {
+  return (
+    <div>
+      <label>{children}</label>
+      <select
+        value={percentage}
+        onChange={(e) => onSelect(Number(e.target.value))}
+      >
+        <option value="0">Dissatisfied (0%)</option>
+        <option value="0.05">It was okay (5%)</option>
+        <option value="0.1">It was good (10%)</option>
+        <option value="0.2">Absolutely amazing! (20%)</option>
+      </select>
+    </div>
+  );
+}
+
+function Output({ bill, tip }) {
+  return (
+    <h3>
+      You pay {bill + tip} (${bill} + ${tip} tip)
+    </h3>
+  );
+}
+
+function Reset({ onReset }) {
+  return <button onClick={onReset}>Reset</button>;
+}
